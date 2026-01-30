@@ -174,6 +174,14 @@ export default {
             })
             this.updateTags()
         },
+        onEnableAllTagsClick() {
+            if (!this.tags.length) return
+            this.tags.forEach(tag => {
+                if (tag.type === 'wrap') return
+                tag.disabled = false
+            })
+            this.updateTags()
+        },
         onClickLoadWebuiPrompt() {
             this.onTextareaChange(true)
         },

@@ -179,6 +179,10 @@
                                  @click="onDisableAllTagsClick">
                                 <icon-svg class="hover-scale-120" name="disabled"/>
                             </div>
+                            <div class="extend-btn-item" v-if="!neg" v-tooltip="getLang('enable_all_keywords')"
+                                 @click="onEnableAllTagsClick">
+                                <icon-svg class="hover-scale-120" name="enable"/>
+                            </div>
                             <div class="extend-btn-item" v-tooltip="getLang('delete_all_keywords')"
                                  @click="onDeleteAllTagsClick">
                                 <icon-svg class="hover-scale-120" name="remove"/>
