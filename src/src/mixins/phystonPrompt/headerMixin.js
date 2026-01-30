@@ -186,6 +186,14 @@ export default {
             this.tags = []
             this.updateTags()
         },
+        onDisableAllTagsClick() {
+            if (!this.tags.length) return
+            this.tags.forEach(tag => {
+                if (tag.type === 'wrap') return
+                tag.disabled = true
+            })
+            this.updateTags()
+        },
         onClickLoadWebuiPrompt() {
             this.onTextareaChange(true)
         },
