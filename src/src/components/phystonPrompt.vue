@@ -175,6 +175,10 @@
                                  @click="onCopyAllTagsClick">
                                 <icon-svg class="hover-scale-120" name="copy"/>
                             </div>
+                            <div class="extend-btn-item" v-tooltip="getLang('favorite_prompt')"
+                                 @click="onFavoritePromptClick">
+                                <icon-svg class="hover-scale-120" name="favorite"/>
+                            </div>
                             <div class="extend-btn-item" v-tooltip="getLang('delete_all_keywords')"
                                  @click="onDeleteAllTagsClick">
                                 <icon-svg class="hover-scale-120" name="remove"/>
