@@ -175,6 +175,10 @@
                                  @click="onCopyAllTagsClick">
                                 <icon-svg class="hover-scale-120" name="copy"/>
                             </div>
+                            <div class="extend-btn-item" v-tooltip="getLang('favorite_prompt')"
+                                 @click="onFavoritePromptClick">
+                                <icon-svg class="hover-scale-120" name="favorite"/>
+                            </div>
                             <div class="extend-btn-item" v-tooltip="getLang('delete_all_keywords')"
                                  @click="onDeleteAllTagsClick">
                                 <icon-svg class="hover-scale-120" name="remove"/>
@@ -286,6 +290,58 @@
                 @mousedown="onDropMouseDown"
                 @mousemove="onDropMouseMove"
                 @mouseup="onDropMouseUp">
+                <div class="prompt-search" style="margin-bottom: 6px;" @click.stop="" @mousedown.stop="" @mousemove.stop="" @mouseup.stop="">
+                    <div class="prompt-search-field" style="position: relative; display: inline-block; margin-right: 8px;">
+                        <input type="text" class="scroll-hide svelte-4xt1ch input-tag-append"
+                               v-model="keywordSearchQuery.tag"
+                               :placeholder="getLang('tag_search')"
+                               @focus="onKeywordSearchFocus('tag')"
+                               @blur="onKeywordSearchBlur('tag')"
+                               @input="onKeywordSearchInput('tag')"
+                               @keydown.enter.prevent="onKeywordSearchEnter('tag')"
+                               @keydown.esc="onKeywordSearchEscape('tag')"/>
+                        <div class="prompt-append-list keyword-search-list"
+                             v-show="keywordSearchOpen.tag && (keywordSearchLoading.tag || keywordSearchError.tag || keywordSearchResults.tag.length)"
+                             :style="{top: '100%', left: '0', minWidth: '100%'}"
+                             @mousedown.stop="" @mousemove.stop="" @mouseup.stop="">
+                            <div v-if="keywordSearchLoading.tag" class="prompt-append-group">
+                                <icon-svg name="loading"/>
+                            </div>
+                            <div v-else-if="keywordSearchError.tag" class="prompt-append-group">
+                                {{ keywordSearchError.tag }}
+                            </div>
+                            <div v-else v-for="item in keywordSearchResults.tag" :key="item" class="prompt-append-group"
+                                 @click="onKeywordSearchSelect('tag', item)">
+                                {{ item }}
+                            </div>
+                        </div>
+                    </div>
+                    <div class="prompt-search-field" style="position: relative; display: inline-block;">
+                        <input type="text" class="scroll-hide svelte-4xt1ch input-tag-append"
+                               v-model="keywordSearchQuery.caption"
+                               :placeholder="getLang('caption_search')"
+                               @focus="onKeywordSearchFocus('caption')"
+                               @blur="onKeywordSearchBlur('caption')"
+                               @input="onKeywordSearchInput('caption')"
+                               @keydown.enter.prevent="onKeywordSearchEnter('caption')"
+                               @keydown.esc="onKeywordSearchEscape('caption')"/>
+                        <div class="prompt-append-list keyword-search-list"
+                             v-show="keywordSearchOpen.caption && (keywordSearchLoading.caption || keywordSearchError.caption || keywordSearchResults.caption.length)"
+                             :style="{top: '100%', left: '0', minWidth: '100%'}"
+                             @mousedown.stop="" @mousemove.stop="" @mouseup.stop="">
+                            <div v-if="keywordSearchLoading.caption" class="prompt-append-group">
+                                <icon-svg name="loading"/>
+                            </div>
+                            <div v-else-if="keywordSearchError.caption" class="prompt-append-group">
+                                {{ keywordSearchError.caption }}
+                            </div>
+                            <div v-else v-for="item in keywordSearchResults.caption" :key="item" class="prompt-append-group"
+                                 @click="onKeywordSearchSelect('caption', item)">
+                                {{ item }}
+                            </div>
+                        </div>
+                    </div>
+                </div>
                 <div class="prompt-tags-list" ref="promptTagsList">
                     <!--<TransitionGroup name="fadeLeft">-->
                     <div v-for="(tag, index) in tags" :key="tag.id"
@@ -576,6 +632,7 @@ import HeaderMixin from "@/mixins/phystonPrompt/headerMixin"
 import DropMixin from "@/mixins/phystonPrompt/dropMixin"
 import TagMixin from "@/mixins/phystonPrompt/tagMixin"
 import GroupTagsMixin from "@/mixins/phystonPrompt/groupTagsMixin"
+import KeywordSearchMixin from "@/mixins/phystonPrompt/keywordSearchMixin"
 import IconSvg from "@/components/iconSvg.vue"
 import HighlightPrompt from "@/components/highlightPrompt.vue"
 import {ColorPicker} from "vue3-colorpicker"
@@ -588,7 +645,7 @@ export default {
         IconSvg,
         ColorPicker,
     },
-    mixins: [LanguageMixin, HeaderMixin, DropMixin, TagMixin, GroupTagsMixin],
+    mixins: [LanguageMixin, HeaderMixin, DropMixin, TagMixin, GroupTagsMixin, KeywordSearchMixin],
     props: {
         name: {
             type: String,
