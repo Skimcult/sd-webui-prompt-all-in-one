@@ -161,6 +161,26 @@ export default {
         onCopyAllTagsClick() {
             this.copy(this.prompt)
         },
+        onFavoritePromptClick() {
+            if (!this.tags.length) return
+            const tags = this.tags.map(tag => ({
+                value: tag.value,
+                localValue: tag.localValue,
+                disabled: tag.disabled,
+                type: tag.type,
+            }))
+            let prompt = this.genPrompt(tags, true)
+            this.gradioAPI.pushFavorite(this.favoriteKey, tags, prompt, '').then(res => {
+                if (res) {
+                    this.$toastr.success(this.getLang('success'))
+                    this.$emit('refreshFavorites', this.favoriteKey)
+                } else {
+                    this.$toastr.error(this.getLang('failed'))
+                }
+            }).catch(() => {
+                this.$toastr.error(this.getLang('failed'))
+            })
+        },
         onDeleteAllTagsClick() {
             if (!confirm(this.getLang('delete_all_keywords_confirm'))) return
             this.tags = []
