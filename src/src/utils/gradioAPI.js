@@ -191,4 +191,8 @@ export default class GradioAPI {
     async getGroupTags(lang) {
         return (await this.api.get("/get_group_tags", {params: {lang}})).data.tags
     }
+
+    async getSdxlKeywords(reload = false) {
+        return (await this.api.get("/get_sdxl_keywords", {params: {reload}})).data.keywords
+    }
 }

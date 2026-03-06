@@ -350,6 +350,99 @@
                         </div>
                     </div>
                 </div>
+                <div class="prompt-search" style="margin-bottom: 8px; display: flex; flex-wrap: wrap; gap: 8px;" @click.stop="" @mousedown.stop="" @mousemove.stop="" @mouseup.stop="">
+                    <div class="prompt-search-field" style="position: relative; display: inline-block;">
+                        <input type="text" class="scroll-hide svelte-4xt1ch input-tag-append" style="min-width: 180px;"
+                               :placeholder="'SDXL Lighting'"
+                               v-model="sdxlLighting"
+                               @focus="onSdxlFocus('lighting')"
+                               @blur="onSdxlBlur('lighting')"
+                               @input="onSdxlInput('lighting')"
+                               @change="applySdxlStyle(sdxlLighting, 'sdxlLighting')"
+                               @keydown.enter.prevent="applySdxlStyle(sdxlLighting, 'sdxlLighting')"/>
+                        <div class="prompt-append-list keyword-search-list"
+                             v-show="sdxlOpenField === 'lighting' && getSdxlFilteredOptions('lighting').length"
+                                :style="{top: '100%', left: '0', minWidth: '100%', maxHeight: '220px', overflowY: 'auto', overflowX: 'hidden'}"
+                             @mousedown.stop="" @mousemove.stop="" @mouseup.stop="">
+                            <div v-for="option in getSdxlFilteredOptions('lighting')"
+                                 :key="`lighting-${getSdxlOptionValue(option)}`"
+                                 class="prompt-append-group"
+                                 v-tooltip="getSdxlOptionDescription(option)"
+                                 @mousedown.prevent="onSdxlSelect('lighting', option)">
+                                {{ getSdxlOptionValue(option) }}
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="prompt-search-field" style="position: relative; display: inline-block;">
+                        <input type="text" class="scroll-hide svelte-4xt1ch input-tag-append" style="min-width: 180px;"
+                               :placeholder="'Camera Type'"
+                               v-model="sdxlCameraType"
+                               @focus="onSdxlFocus('camera_type')"
+                               @blur="onSdxlBlur('camera_type')"
+                               @input="onSdxlInput('camera_type')"
+                               @change="applySdxlStyle(sdxlCameraType, 'sdxlCameraType')"
+                               @keydown.enter.prevent="applySdxlStyle(sdxlCameraType, 'sdxlCameraType')"/>
+                        <div class="prompt-append-list keyword-search-list"
+                             v-show="sdxlOpenField === 'camera_type' && getSdxlFilteredOptions('camera_type').length"
+                                :style="{top: '100%', left: '0', minWidth: '100%', maxHeight: '220px', overflowY: 'auto', overflowX: 'hidden'}"
+                             @mousedown.stop="" @mousemove.stop="" @mouseup.stop="">
+                            <div v-for="option in getSdxlFilteredOptions('camera_type')"
+                                 :key="`camera-${getSdxlOptionValue(option)}`"
+                                 class="prompt-append-group"
+                                 v-tooltip="getSdxlOptionDescription(option)"
+                                 @mousedown.prevent="onSdxlSelect('camera_type', option)">
+                                {{ getSdxlOptionValue(option) }}
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="prompt-search-field" style="position: relative; display: inline-block;">
+                        <input type="text" class="scroll-hide svelte-4xt1ch input-tag-append" style="min-width: 180px;"
+                               :placeholder="'Frame'"
+                               v-model="sdxlFrame"
+                               @focus="onSdxlFocus('frame')"
+                               @blur="onSdxlBlur('frame')"
+                               @input="onSdxlInput('frame')"
+                               @change="applySdxlStyle(sdxlFrame, 'sdxlFrame')"
+                               @keydown.enter.prevent="applySdxlStyle(sdxlFrame, 'sdxlFrame')"/>
+                        <div class="prompt-append-list keyword-search-list"
+                             v-show="sdxlOpenField === 'frame' && getSdxlFilteredOptions('frame').length"
+                                :style="{top: '100%', left: '0', minWidth: '100%', maxHeight: '220px', overflowY: 'auto', overflowX: 'hidden'}"
+                             @mousedown.stop="" @mousemove.stop="" @mouseup.stop="">
+                            <div v-for="option in getSdxlFilteredOptions('frame')"
+                                 :key="`frame-${getSdxlOptionValue(option)}`"
+                                 class="prompt-append-group"
+                                 v-tooltip="getSdxlOptionDescription(option)"
+                                 @mousedown.prevent="onSdxlSelect('frame', option)">
+                                {{ getSdxlOptionValue(option) }}
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="prompt-search-field" style="position: relative; display: inline-block;">
+                        <input type="text" class="scroll-hide svelte-4xt1ch input-tag-append" style="min-width: 180px;"
+                               :placeholder="'Shot'"
+                               v-model="sdxlShot"
+                               @focus="onSdxlFocus('shot')"
+                               @blur="onSdxlBlur('shot')"
+                               @input="onSdxlInput('shot')"
+                               @change="applySdxlStyle(sdxlShot, 'sdxlShot')"
+                               @keydown.enter.prevent="applySdxlStyle(sdxlShot, 'sdxlShot')"/>
+                        <div class="prompt-append-list keyword-search-list"
+                             v-show="sdxlOpenField === 'shot' && getSdxlFilteredOptions('shot').length"
+                                :style="{top: '100%', left: '0', minWidth: '100%', maxHeight: '220px', overflowY: 'auto', overflowX: 'hidden'}"
+                             @mousedown.stop="" @mousemove.stop="" @mouseup.stop="">
+                            <div v-for="option in getSdxlFilteredOptions('shot')"
+                                 :key="`shot-${getSdxlOptionValue(option)}`"
+                                 class="prompt-append-group"
+                                 v-tooltip="getSdxlOptionDescription(option)"
+                                 @mousedown.prevent="onSdxlSelect('shot', option)">
+                                {{ getSdxlOptionValue(option) }}
+                            </div>
+                        </div>
+                    </div>
+                </div>
                 <div class="prompt-tags-list" ref="promptTagsList">
                     <!--<TransitionGroup name="fadeLeft">-->
                     <div v-for="(tag, index) in tags" :key="tag.id"
@@ -827,6 +920,44 @@ export default {
             counterText: '0/75',
             tags: [],
 
+            sdxlLighting: '',
+            sdxlCameraType: '',
+            sdxlFrame: '',
+            sdxlShot: '',
+            sdxlOpenField: '',
+            sdxlLightingOptions: [
+                'soft studio light',
+                'cinematic rim lighting',
+                'golden hour sunlight',
+                'overcast daylight',
+                'neon night lighting',
+                'high-key lighting',
+                'low-key dramatic lighting'
+            ],
+            sdxlCameraTypeOptions: [
+                'DSLR',
+                'mirrorless camera',
+                'cinema camera',
+                'film camera',
+                'smartphone camera'
+            ],
+            sdxlFrameOptions: [
+                'portrait orientation',
+                'landscape orientation',
+                'square composition',
+                'widescreen 16:9',
+                'vertical 9:16'
+            ],
+            sdxlShotOptions: [
+                'close-up shot',
+                'medium shot',
+                'full body shot',
+                'wide shot',
+                'overhead shot',
+                'low angle shot',
+                'high angle shot'
+            ],
+
             sortable: null,
             droping: false,
             loading: {},
@@ -872,6 +1003,7 @@ export default {
         if (this.$appMode) {
             this.counterText = ''
         }
+        this.loadSdxlKeywords()
         this.$nextTick(() => {
             this.initSortable()
             // autoSizeInput(this.$refs.promptTagAppend)
@@ -900,6 +1032,94 @@ export default {
         })
     },
     methods: {
+        getSdxlOptionsByField(field) {
+            if (field === 'lighting') return this.sdxlLightingOptions
+            if (field === 'camera_type') return this.sdxlCameraTypeOptions
+            if (field === 'frame') return this.sdxlFrameOptions
+            if (field === 'shot') return this.sdxlShotOptions
+            return []
+        },
+        getSdxlQueryByField(field) {
+            if (field === 'lighting') return this.sdxlLighting
+            if (field === 'camera_type') return this.sdxlCameraType
+            if (field === 'frame') return this.sdxlFrame
+            if (field === 'shot') return this.sdxlShot
+            return ''
+        },
+        getSdxlModelFieldByField(field) {
+            if (field === 'lighting') return 'sdxlLighting'
+            if (field === 'camera_type') return 'sdxlCameraType'
+            if (field === 'frame') return 'sdxlFrame'
+            if (field === 'shot') return 'sdxlShot'
+            return 'sdxlLighting'
+        },
+        getSdxlFilteredOptions(field) {
+            const options = this.getSdxlOptionsByField(field)
+            const query = (this.getSdxlQueryByField(field) || '').toString().trim().toLowerCase()
+            if (!query) return options.slice(0, 40)
+            return options
+                .filter((option) => this.getSdxlOptionValue(option).toLowerCase().includes(query))
+                .slice(0, 40)
+        },
+        onSdxlFocus(field) {
+            this.sdxlOpenField = field
+        },
+        onSdxlBlur(field) {
+            setTimeout(() => {
+                if (this.sdxlOpenField === field) {
+                    this.sdxlOpenField = ''
+                }
+            }, 120)
+        },
+        onSdxlInput(field) {
+            this.sdxlOpenField = field
+        },
+        onSdxlSelect(field, option) {
+            const value = this.getSdxlOptionValue(option)
+            const modelField = this.getSdxlModelFieldByField(field)
+            this[modelField] = value
+            this.sdxlOpenField = ''
+            this.applySdxlStyle(value, modelField)
+        },
+        getSdxlOptionValue(option) {
+            if (typeof option === 'string') return option
+            if (!option || typeof option !== 'object') return ''
+            return option.value || option.keyword || option.text || ''
+        },
+        getSdxlOptionDescription(option) {
+            if (!option || typeof option !== 'object') return ''
+            return option.description || option.desc || option.effect || ''
+        },
+        applySdxlStyle(value, fieldName) {
+            const text = (value || '').toString().trim()
+            if (!text) return
+            const index = this._appendTag(text)
+            if (index !== -1) {
+                this.updateTags()
+            }
+            this.sdxlLighting = ''
+            this.sdxlCameraType = ''
+            this.sdxlFrame = ''
+            this.sdxlShot = ''
+        },
+        loadSdxlKeywords() {
+            this.gradioAPI.getSdxlKeywords().then((keywords) => {
+                if (!keywords || typeof keywords !== 'object') return
+                if (Array.isArray(keywords.lighting) && keywords.lighting.length) {
+                    this.sdxlLightingOptions = keywords.lighting
+                }
+                if (Array.isArray(keywords.camera_type) && keywords.camera_type.length) {
+                    this.sdxlCameraTypeOptions = keywords.camera_type
+                }
+                if (Array.isArray(keywords.frame) && keywords.frame.length) {
+                    this.sdxlFrameOptions = keywords.frame
+                }
+                if (Array.isArray(keywords.shot) && keywords.shot.length) {
+                    this.sdxlShotOptions = keywords.shot
+                }
+            }).catch(() => {
+            })
+        },
         init() {
             this.tags = []
             this.onTextareaChange()

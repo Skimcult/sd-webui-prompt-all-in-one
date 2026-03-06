@@ -2,25 +2,42 @@ import gradio as gr
 import os
 import sys
 from pathlib import Path
+import importlib
+import types
 from modules import script_callbacks, extra_networks, prompt_parser
 from fastapi import FastAPI, Body, Request, Response
 from fastapi.responses import FileResponse
-from scripts.physton_prompt.storage import Storage
-from scripts.physton_prompt.get_extensions import get_extensions
-from scripts.physton_prompt.get_token_counter import get_token_counter
-from scripts.physton_prompt.get_i18n import get_i18n
-from scripts.physton_prompt.get_translate_apis import get_translate_apis, privacy_translate_api_config, unprotected_translate_api_config
-from scripts.physton_prompt.translate import translate
-from scripts.physton_prompt.history import History
-from scripts.physton_prompt.csv import get_csvs, get_csv
-from scripts.physton_prompt.styles import get_style_full_path, get_extension_css_list
-from scripts.physton_prompt.get_extra_networks import get_extra_networks
-from scripts.physton_prompt.packages import get_packages_state, install_package
-from scripts.physton_prompt.gen_openai import gen_openai
-from scripts.physton_prompt.get_lang import get_lang
-from scripts.physton_prompt.get_version import get_git_commit_version, get_git_remote_versions, get_latest_version
-from scripts.physton_prompt.mbart50 import initialize as mbart50_initialize, translate as mbart50_translate
-from scripts.physton_prompt.get_group_tags import get_group_tags
+
+SCRIPT_DIR = Path(__file__).resolve().parent
+PARENT_DIR = SCRIPT_DIR.parent
+for p in (SCRIPT_DIR, PARENT_DIR):
+    p_str = str(p)
+    if p_str not in sys.path:
+        sys.path.insert(0, p_str)
+
+ph_pkg = importlib.import_module("physton_prompt")
+scripts_pkg = sys.modules.setdefault("scripts", types.ModuleType("scripts"))
+# Treat scripts as a package so nested imports under scripts.physton_prompt work
+scripts_pkg.__path__ = [str(SCRIPT_DIR)]
+sys.modules["scripts.physton_prompt"] = ph_pkg
+
+from physton_prompt.storage import Storage
+from physton_prompt.get_extensions import get_extensions
+from physton_prompt.get_token_counter import get_token_counter
+from physton_prompt.get_i18n import get_i18n
+from physton_prompt.get_translate_apis import get_translate_apis, privacy_translate_api_config, unprotected_translate_api_config
+from physton_prompt.translate import translate
+from physton_prompt.history import History
+from physton_prompt.csv import get_csvs, get_csv
+from physton_prompt.styles import get_style_full_path, get_extension_css_list
+from physton_prompt.get_extra_networks import get_extra_networks
+from physton_prompt.packages import get_packages_state, install_package
+from physton_prompt.gen_openai import gen_openai
+from physton_prompt.get_lang import get_lang
+from physton_prompt.get_version import get_git_commit_version, get_git_remote_versions, get_latest_version
+from physton_prompt.mbart50 import initialize as mbart50_initialize, translate as mbart50_translate
+from physton_prompt.get_group_tags import get_group_tags
+from physton_prompt.get_sdxl_keywords import get_sdxl_keywords
 
 try:
     from modules.shared import cmd_opts
@@ -392,6 +409,10 @@ def on_app_started(_: gr.Blocks, app: FastAPI):
     @app.get("/physton_prompt/get_group_tags")
     async def _get_group_tags(lang: str):
         return {"tags": get_group_tags(lang)}
+
+    @app.get("/physton_prompt/get_sdxl_keywords")
+    async def _get_sdxl_keywords(reload: bool = False):
+        return {"keywords": get_sdxl_keywords(reload)}
 
     try:
         translate_api = Storage.get('translateApi')
