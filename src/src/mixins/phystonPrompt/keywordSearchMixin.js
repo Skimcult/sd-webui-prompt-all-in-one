@@ -21,22 +21,27 @@ export default {
             keywordSearchQuery: {
                 tag: "",
                 caption: "",
+                lora: "",
             },
             keywordSearchResults: {
                 tag: [],
                 caption: [],
+                lora: [],
             },
             keywordSearchLoading: {
                 tag: false,
                 caption: false,
+                lora: false,
             },
             keywordSearchError: {
                 tag: "",
                 caption: "",
+                lora: "",
             },
             keywordSearchOpen: {
                 tag: false,
                 caption: false,
+                lora: false,
             },
         };
     },
@@ -53,7 +58,7 @@ export default {
         onKeywordSearchFocus(type) {
             this.keywordSearchOpen[type] = true;
             this.ensureKeywordSearchList(type);
-            if (this.keywordSearchQuery[type]) {
+            if (type === "lora" || this.keywordSearchQuery[type]) {
                 this.queueKeywordSearch(type);
             }
         },
@@ -79,7 +84,11 @@ export default {
             this.onKeywordSearchSelect(type, value);
         },
         onKeywordSearchSelect(type, value) {
-            const text = value?.toString().trim();
+            const original = value?.toString().trim();
+            let text = original;
+            if (type === "lora" && original) {
+                text = `<lora:${original}:1>`;
+            }
             if (!text) return;
             const index = this._appendTag(text);
             this.keywordSearchQuery[type] = "";
@@ -100,13 +109,18 @@ export default {
         },
         async updateKeywordSearchResults(type) {
             const query = this.keywordSearchQuery[type]?.trim();
+            const list = await this.ensureKeywordSearchList(type);
+            if (type === "lora" && !query) {
+                this.keywordSearchResults[type] = list.map((item) => item.value);
+                this.keywordSearchError[type] = "";
+                return;
+            }
             if (!query) {
                 this.keywordSearchResults[type] = [];
                 this.keywordSearchError[type] = "";
                 return;
             }
             const currentQuery = query;
-            const list = await this.ensureKeywordSearchList(type);
             if (this.keywordSearchQuery[type]?.trim() !== currentQuery) return;
             if (!list.length) {
                 this.keywordSearchResults[type] = [];
@@ -115,6 +129,9 @@ export default {
             this.keywordSearchResults[type] = this._filterKeywordSearchResults(type, list, currentQuery);
         },
         async ensureKeywordSearchList(type) {
+            if (type === "lora") {
+                return this._getLoraKeywordSearchList();
+            }
             if (keywordCache[type]) return keywordCache[type];
             this.keywordSearchLoading[type] = true;
             this.keywordSearchError[type] = "";
@@ -173,6 +190,9 @@ export default {
             return list;
         },
         _filterKeywordSearchResults(type, list, query) {
+            if (type === "lora") {
+                return this._filterLoraSearchResults(list, query);
+            }
             const normalized = query.toLowerCase().trim();
             if (!normalized) return [];
             const tokens = this._keywordSearchTokens(type, normalized);
@@ -207,9 +227,63 @@ export default {
             }
             return results;
         },
+        _filterLoraSearchResults(list, query) {
+            const normalized = query.toLowerCase().trim();
+            if (!normalized) return [];
+            const tokens = this._keywordSearchTokens("lora", normalized);
+            const prefixMatches = [];
+            const containsMatches = [];
+            for (const item of list) {
+                const terms = item.terms || [item.search];
+                const hasPrefix = tokens.some((token) => terms.some((term) => term.startsWith(token)));
+                if (hasPrefix) {
+                    prefixMatches.push(item.value);
+                    continue;
+                }
+                const hasInclude = tokens.some((token) => terms.some((term) => term.includes(token)));
+                if (hasInclude) {
+                    containsMatches.push(item.value);
+                }
+            }
+            return [...prefixMatches, ...containsMatches];
+        },
+        _getLoraKeywordSearchList() {
+            const loras = this.loras || {};
+            const byValue = new Map();
+
+            Object.entries(loras).forEach(([alias, value]) => {
+                const name = (value || "").toString().trim();
+                if (!name) return;
+                const key = name.toLowerCase();
+                if (!byValue.has(key)) {
+                    byValue.set(key, {
+                        value: name,
+                        search: key,
+                        terms: new Set([key]),
+                    });
+                }
+                const entry = byValue.get(key);
+                const aliasText = (alias || "").toString().trim().toLowerCase();
+                if (aliasText) {
+                    entry.terms.add(aliasText);
+                    entry.terms.add(aliasText.replace(/[_-]+/g, " "));
+                }
+            });
+
+            return Array.from(byValue.values())
+                .map((item) => ({
+                    value: item.value,
+                    search: item.search,
+                    terms: Array.from(item.terms),
+                }))
+                .sort((a, b) => a.value.localeCompare(b.value));
+        },
         _keywordSearchTokens(type, query) {
             const tokens = new Set([query]);
             if (type === "tag") {
+                tokens.add(query.replace(/\s+/g, "_"));
+                tokens.add(query.replace(/[_-]+/g, " "));
+            } else if (type === "lora") {
                 tokens.add(query.replace(/\s+/g, "_"));
                 tokens.add(query.replace(/[_-]+/g, " "));
             }

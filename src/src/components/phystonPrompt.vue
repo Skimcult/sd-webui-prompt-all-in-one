@@ -308,7 +308,7 @@
                                @input="onKeywordSearchInput('tag')"
                                @keydown.enter.prevent="onKeywordSearchEnter('tag')"
                                @keydown.esc="onKeywordSearchEscape('tag')"/>
-                        <div class="prompt-append-list keyword-search-list"
+                            <div class="prompt-append-list keyword-search-list keyword-search-compact"
                              v-show="keywordSearchOpen.tag && (keywordSearchLoading.tag || keywordSearchError.tag || keywordSearchResults.tag.length)"
                              :style="{top: '100%', left: '0', minWidth: '100%'}"
                              @mousedown.stop="" @mousemove.stop="" @mouseup.stop="">
@@ -333,7 +333,7 @@
                                @input="onKeywordSearchInput('caption')"
                                @keydown.enter.prevent="onKeywordSearchEnter('caption')"
                                @keydown.esc="onKeywordSearchEscape('caption')"/>
-                        <div class="prompt-append-list keyword-search-list"
+                            <div class="prompt-append-list keyword-search-list keyword-search-compact"
                              v-show="keywordSearchOpen.caption && (keywordSearchLoading.caption || keywordSearchError.caption || keywordSearchResults.caption.length)"
                              :style="{top: '100%', left: '0', minWidth: '100%'}"
                              @mousedown.stop="" @mousemove.stop="" @mouseup.stop="">
@@ -345,6 +345,31 @@
                             </div>
                             <div v-else v-for="item in keywordSearchResults.caption" :key="item" class="prompt-append-group"
                                  @click="onKeywordSearchSelect('caption', item)">
+                                {{ item }}
+                            </div>
+                        </div>
+                    </div>
+                    <div class="prompt-search-field" style="position: relative; display: inline-block; margin-left: 8px;">
+                        <input type="text" class="scroll-hide svelte-4xt1ch input-tag-append"
+                               v-model="keywordSearchQuery.lora"
+                               :placeholder="getLang('lora_search')"
+                               @focus="onKeywordSearchFocus('lora')"
+                               @blur="onKeywordSearchBlur('lora')"
+                               @input="onKeywordSearchInput('lora')"
+                               @keydown.enter.prevent="onKeywordSearchEnter('lora')"
+                               @keydown.esc="onKeywordSearchEscape('lora')"/>
+                        <div class="prompt-append-list keyword-search-list keyword-search-compact"
+                             v-show="keywordSearchOpen.lora && (keywordSearchLoading.lora || keywordSearchError.lora || keywordSearchResults.lora.length)"
+                             :style="{top: '100%', left: '0', minWidth: '100%'}"
+                             @mousedown.stop="" @mousemove.stop="" @mouseup.stop="">
+                            <div v-if="keywordSearchLoading.lora" class="prompt-append-group">
+                                <icon-svg name="loading"/>
+                            </div>
+                            <div v-else-if="keywordSearchError.lora" class="prompt-append-group">
+                                {{ keywordSearchError.lora }}
+                            </div>
+                            <div v-else v-for="item in keywordSearchResults.lora" :key="item" class="prompt-append-group"
+                                 @click="onKeywordSearchSelect('lora', item)">
                                 {{ item }}
                             </div>
                         </div>
@@ -1855,3 +1880,30 @@ export default {
     },
 }
 </script>
+
+<style scoped>
+.keyword-search-compact {
+    max-height: 220px;
+    overflow-y: auto;
+    overflow-x: hidden;
+    scrollbar-width: thin;
+}
+
+.keyword-search-compact::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+}
+
+.keyword-search-compact::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+.keyword-search-compact::-webkit-scrollbar-thumb {
+    background: rgba(160, 160, 160, 0.55);
+    border-radius: 999px;
+}
+
+.keyword-search-compact::-webkit-scrollbar-thumb:hover {
+    background: rgba(180, 180, 180, 0.75);
+}
+</style>
