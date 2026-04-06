@@ -315,6 +315,7 @@ export default {
             onlyCsvOnAuto: false,
 
             startWatchSave: false,
+            generationSyncBound: false,
 
             pasteBtn: null,
             showPastePopup: false,
@@ -867,6 +868,7 @@ export default {
                         // item.$textarea.parentNode.appendChild($prompt)
                     })
 
+                    this.bindGenerationSync()
                     this.startWatchSave = true
                 })
 
@@ -905,6 +907,51 @@ export default {
                     clientX: 283,
                 })*/
             })
+        },
+        getPromptRef(id) {
+            const refItem = this.$refs[id]
+            if (Array.isArray(refItem)) {
+                return refItem[0]
+            }
+            return refItem
+        },
+        syncPromptComponentsForTab(tabId) {
+            this.prompts.forEach(item => {
+                if (item.tab !== tabId) return
+                const promptRef = this.getPromptRef(item.id)
+                if (promptRef && typeof promptRef.updatePrompt === 'function') {
+                    promptRef.updatePrompt()
+                }
+            })
+        },
+        bindGenerationSync() {
+            if (this.generationSyncBound) return
+
+            const buttonTabs = {
+                txt2img_generate: 'tab_txt2img',
+                img2img_generate: 'tab_img2img',
+            }
+
+            Object.entries(buttonTabs).forEach(([buttonId, tabId]) => {
+                const button = common.gradioApp().querySelector(`#${buttonId}`)
+                if (!button) return
+
+                const sync = () => this.syncPromptComponentsForTab(tabId)
+                button.addEventListener('pointerdown', sync, true)
+                button.addEventListener('click', sync, true)
+            })
+
+            this.prompts.forEach(item => {
+                if (!item.$textarea) return
+
+                item.$textarea.addEventListener('keydown', (event) => {
+                    if ((event.ctrlKey || event.metaKey) && event.key === 'Enter') {
+                        this.syncPromptComponentsForTab(item.tab)
+                    }
+                }, true)
+            })
+
+            this.generationSyncBound = true
         },
         loadGroupTags() {
             return this.gradioAPI.getGroupTags(this.languageCode).then(data => {
@@ -1218,3 +1265,5 @@ export default {
     },
 }
 </script>
+
+
